@@ -1,4 +1,4 @@
-package timaxa007.mod_backpack;
+package timaxa007.backpack.client;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,15 +8,17 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
-public class ItemStorageGui extends GuiContainer {
+import timaxa007.backpack.inventory.InventoryItemStorage;
+
+public class GuiItemStorage extends GuiContainer {
 
 	private static final ResourceLocation field_147017_u = new ResourceLocation("textures/gui/container/generic_54.png");
 	private int inventoryRows;
 	private InventoryPlayer inv_p;
 	private InventoryItemStorage inv;
 
-	public ItemStorageGui(EntityPlayer player, InventoryItemStorage inventoryItemStorage) {
-		super(new ItemStorageContainer(player, inventoryItemStorage));
+	public GuiItemStorage(EntityPlayer player, InventoryItemStorage inventoryItemStorage) {
+		super(new timaxa007.backpack.inventory.ContainerItemStorage(player, inventoryItemStorage));
 		inv_p = player.inventory;
 		inv = inventoryItemStorage;
 		inventoryRows = inventoryItemStorage.getSizeInventory() / 9;

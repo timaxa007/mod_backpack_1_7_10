@@ -1,21 +1,23 @@
-package timaxa007.mod_backpack;
+package timaxa007.backpack.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Constants.NBT;
 
 public class InventoryItemStorage implements IInventory {
 
-	private ItemStack current;//Предмет в котором будет хранить вещи
-	private ItemStack[] inventory;//Массив слотов инвентаря в виде ItemStack
+	final ItemStack current;//Предмет в котором будет хранить вещи
+	ItemStack[] inventory;//Массив слотов инвентаря в виде ItemStack
+	boolean isSave = false;
 
 	public InventoryItemStorage(ItemStack is) {
-		if (!is.hasTagCompound()) is.setTagCompound(new NBTTagCompound());
 		current = is;
-		load(is);
+		if (!current.hasTagCompound()) current.setTagCompound(new NBTTagCompound());
+		load(current);
+		//openInventory();
 	}
 
 	@Override
@@ -24,8 +26,8 @@ public class InventoryItemStorage implements IInventory {
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot) {
-		return slot >= 0 && slot < inventory.length ? inventory[slot] : null;
+	public ItemStack getStackInSlot(int slot_id) {
+		return slot_id >= 0 && slot_id < inventory.length ? inventory[slot_id] : null;
 	}
 
 	@Override
@@ -49,17 +51,17 @@ public class InventoryItemStorage implements IInventory {
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int slot) {
-		if (inventory[slot] != null) {
-			ItemStack itemstack = inventory[slot];
-			inventory[slot] = null;
+	public ItemStack getStackInSlotOnClosing(int slot_id) {
+		if (inventory[slot_id] != null) {
+			ItemStack itemstack = inventory[slot_id];
+			inventory[slot_id] = null;
 			return itemstack;
 		} else return null;
 	}
 
 	@Override
-	public void setInventorySlotContents(int slot, ItemStack is) {
-		inventory[slot] = is;
+	public void setInventorySlotContents(int slot_id, ItemStack is) {
+		inventory[slot_id] = is;
 
 		if (is != null && is.stackSize > getInventoryStackLimit())
 			is.stackSize = getInventoryStackLimit();
@@ -84,7 +86,7 @@ public class InventoryItemStorage implements IInventory {
 
 	@Override
 	public void markDirty() {
-		//У меня этот метод от 3 и более раза за раз вызывается, так-что я с ним ни чего не делаю.
+		if (!isSave) isSave = true;
 	}
 
 	@Override
@@ -96,13 +98,13 @@ public class InventoryItemStorage implements IInventory {
 	//Открытие инвентаря
 	@Override
 	public void openInventory() {
-		load();
+		//load();
 	}
 
 	//Закрытие инвентаря
 	@Override
 	public void closeInventory() {
-		save();
+		//save();
 	}
 
 	@Override
@@ -111,7 +113,7 @@ public class InventoryItemStorage implements IInventory {
 		return true;
 	}
 
-	//Методы "load" должны из предмета драть нужные теги для простой работы с инвентарём.
+	//Методы "load" должны из предмета брать нужные теги для простой работы с инвентарём.
 	public void load() {
 		load(current);
 	}
@@ -122,12 +124,12 @@ public class InventoryItemStorage implements IInventory {
 
 	public void load(NBTTagCompound nbt) {
 		if (nbt != null) {
-			NBTTagList nbttaglist = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+			NBTTagList nbttaglist = nbt.getTagList("Items", NBT.TAG_COMPOUND);
 
 			//Мне так показалось проще сделать, чем брать значение из "nbttagcompound1.getByte("Slot")"
 			//Наш NBT тег из которого будем брать максимальное количества слотов для нашего инвентаря Item Storage
 			//Желательно, чтобы размеры инвентаря были [9 * n]
-			if (nbt.hasKey("CustomSize", Constants.NBT.TAG_BYTE))
+			if (nbt.hasKey("CustomSize", NBT.TAG_BYTE))
 				inventory = new ItemStack[nbt.getByte("CustomSize") & 255];
 			//Если нету нужно тега, то замер инвентаря Item Storage будет в 27 слотов.
 			else inventory = new ItemStack[(9 * 3)];
@@ -145,42 +147,47 @@ public class InventoryItemStorage implements IInventory {
 
 	//Методы "save" должны в предмет сохранять инвентарь Item Storage в теги.
 	public void save() {
-		current = save(current);
+		/*current = */save(current);
 	}
 
-	public ItemStack save(ItemStack is) {
-		if (is != null && current != null) {
+	public void save(ItemStack is) {
+		/*if (is != null && current != null) {
 			NBTTagCompound nbt = save(current.getTagCompound());
 			if (nbt != null) is.setTagCompound(nbt);
 			return current;
-		}
-		return is;
+		}*/
+		/*
+		NBTTagCompound nbt = current.getTagCompound();
+		save(nbt);
+		is.setTagCompound(nbt);
+		 */
+		save(is.getTagCompound());
+		//return is;
 	}
 
-	public NBTTagCompound save(NBTTagCompound nbt) {
-		if (nbt != null) {
-			NBTTagList nbttaglist = new NBTTagList();
+	public void save(NBTTagCompound nbt) {
+		NBTTagList nbttaglist = new NBTTagList();
 
-			nbt.setByte("CustomSize", (byte)getSizeInventory());
+		nbt.setByte("CustomSize", (byte)getSizeInventory());
 
-			for (int i = 0; i < inventory.length; ++i) {
-				if (inventory[i] != null) {
-					NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-					nbttagcompound1.setByte("Slot", (byte)i);
-					inventory[i].writeToNBT(nbttagcompound1);
-					nbttaglist.appendTag(nbttagcompound1);
-				}
+		for (int i = 0; i < inventory.length; ++i) {
+			if (inventory[i] != null) {
+				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+				nbttagcompound1.setByte("Slot", (byte)i);
+				inventory[i].writeToNBT(nbttagcompound1);
+				nbttaglist.appendTag(nbttagcompound1);
 			}
-
-			nbt.setTag("Items", nbttaglist);
-
 		}
-		return nbt;
+
+		nbt.setTag("Items", nbttaglist);
 	}
 
-	public ItemStack update(EntityPlayer player) {
-		//Да - каждый тик будет сохраняться. Но при этом, практически не наблюдался дюп или тупой работы инвентаря.
-		return save(player.getCurrentEquippedItem());
+	public void update(EntityPlayer player) {
+		if (isSave) {
+			save();
+			player.inventory.setInventorySlotContents(player.inventory.currentItem, current);
+			isSave = false;
+		}
 	}
 
 }

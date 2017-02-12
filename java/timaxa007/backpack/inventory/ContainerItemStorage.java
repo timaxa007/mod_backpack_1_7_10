@@ -1,16 +1,16 @@
-package timaxa007.mod_backpack;
+package timaxa007.backpack.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import timaxa007.backpack.ItemBackpack;
 
-public class ItemStorageContainer extends Container {
+public class ContainerItemStorage extends net.minecraft.inventory.Container {
 
 	private InventoryItemStorage inv;
 	private int numRows;
 
-	public ItemStorageContainer(EntityPlayer player, InventoryItemStorage inventoryItemStorage) {
+	public ContainerItemStorage(EntityPlayer player, InventoryItemStorage inventoryItemStorage) {
 		inv = inventoryItemStorage;
 		inv.openInventory();//Типа инициализируем открытия инвентаря
 		numRows = inv.getSizeInventory() / 9;
@@ -19,10 +19,14 @@ public class ItemStorageContainer extends Container {
 		int k;
 
 		//Слоты инвентаря Item Storage
-		for (j = 0; j < numRows; ++j) {
+		/*for (j = 0; j < numRows; ++j) {
 			for (k = 0; k < 9; ++k) {
 				addSlotToContainer(new StorageSlot(inv, k + j * 9, 8 + k * 18, 18 + j * 18));
 			}
+		}*/
+
+		for (int id = 0; id < inv.getSizeInventory(); ++id) {
+			addSlotToContainer(new StorageSlot(inv, id, 8 + (id % 9) * 18, 18 + (id / 9) * 18));
 		}
 
 		//Слоты инвентаря игрока
@@ -53,7 +57,7 @@ public class ItemStorageContainer extends Container {
 			ItemStack is1 = slot.getStack();
 			is = is1.copy();
 
-			if (is1.getItem() instanceof IItemStorage) return null;
+			if (is1.getItem() instanceof ItemBackpack) return null;
 
 			if (slot_i < inv.getSizeInventory()) {
 				if (!mergeItemStack(is1, inv.getSizeInventory(), inventorySlots.size(), true)) return null;
@@ -69,7 +73,6 @@ public class ItemStorageContainer extends Container {
 
 	@Override
 	public ItemStack slotClick(int slot, int button, int modifier, EntityPlayer player) {
-		if (player == null) return null;
 		if (modifier == 2) return null;//Блокируем возможность использование игроком цифровых кнопок, чтобы не было попытки подмены
 		return super.slotClick(slot, button, modifier, player);
 	}
@@ -80,8 +83,8 @@ public class ItemStorageContainer extends Container {
 		inv.closeInventory();//Типа инициализируем закрытия инвентаря
 	}
 
-	public ItemStack update(EntityPlayer player) {
-		return (inv != null && player.getCurrentEquippedItem() != null) ? inv.update(player) : null;
+	public void update(EntityPlayer player) {
+		/*return */if (inv != null) inv.update(player);
 	}
 
 }

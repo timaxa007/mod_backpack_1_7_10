@@ -1,8 +1,9 @@
-package timaxa007.mod_backpack;
+package timaxa007.backpack.inventory;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import timaxa007.backpack.ItemBackpack;
 
 public class StorageSlot extends Slot {
 
@@ -14,7 +15,7 @@ public class StorageSlot extends Slot {
 	//В дальнейшем я тут буду добавлять, чтобы нельзя из других модов вставлять предметы с хранением вещей.
 	@Override
 	public boolean isItemValid(ItemStack is) {
-		return (is != null && is.getItem() instanceof IItemStorage) ? false : super.isItemValid(is);
+		return (is != null && is.getItem() instanceof ItemBackpack) ? false : super.isItemValid(is);
 	}
 
 }

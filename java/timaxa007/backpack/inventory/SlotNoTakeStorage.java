@@ -1,4 +1,4 @@
-package timaxa007.mod_backpack;
+package timaxa007.backpack.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
