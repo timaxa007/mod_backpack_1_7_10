@@ -16,7 +16,6 @@ public class SlotNoTakeStorage extends Slot {
 	@Override
 	public boolean canTakeStack(EntityPlayer player) {
 		ItemStack is = inventory.getStackInSlot(getSlotIndex());
-		//if (is != null && is.getItem() instanceof ItemStorage) return false;
 		if (is != null && is == player.getCurrentEquippedItem()) return false;
 		return super.canTakeStack(player);
 	}

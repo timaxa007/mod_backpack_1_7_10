@@ -19,12 +19,6 @@ public class ContainerItemStorage extends net.minecraft.inventory.Container {
 		int k;
 
 		//Слоты инвентаря Item Storage
-		/*for (j = 0; j < numRows; ++j) {
-			for (k = 0; k < 9; ++k) {
-				addSlotToContainer(new StorageSlot(inv, k + j * 9, 8 + k * 18, 18 + j * 18));
-			}
-		}*/
-
 		for (int id = 0; id < inv.getSizeInventory(); ++id) {
 			addSlotToContainer(new StorageSlot(inv, id, 8 + (id % 9) * 18, 18 + (id / 9) * 18));
 		}
@@ -57,6 +51,7 @@ public class ContainerItemStorage extends net.minecraft.inventory.Container {
 			ItemStack is1 = slot.getStack();
 			is = is1.copy();
 
+			//Или иначе по шифт-клику можно было засунуть в наш рюкзак ещё один рюкзак.
 			if (is1.getItem() instanceof ItemBackpack) return null;
 
 			if (slot_i < inv.getSizeInventory()) {
@@ -84,7 +79,7 @@ public class ContainerItemStorage extends net.minecraft.inventory.Container {
 	}
 
 	public void update(EntityPlayer player) {
-		/*return */if (inv != null) inv.update(player);
+		if (inv != null) inv.update(player);
 	}
 
 }

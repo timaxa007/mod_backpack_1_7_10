@@ -11,7 +11,7 @@ public class StorageSlot extends Slot {
 		super(inv, id, x, y);
 	}
 
-	//Нельзя поставить в этот слот предмет с экземпляром IItemStorage.
+	//Нельзя поставить в этот слот предмет с экземпляром ItemBackpack.
 	//В дальнейшем я тут буду добавлять, чтобы нельзя из других модов вставлять предметы с хранением вещей.
 	@Override
 	public boolean isItemValid(ItemStack is) {
